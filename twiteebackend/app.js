@@ -4,7 +4,8 @@ const connect = require('./db/connect');
 const verifier = require('./models/tauth')
 
  
-
+let accessToken2 
+let refreshToken2
 const twitterClient = new TwitterApi({
     clientId: "djhNRzh0WEYxazJkRS1EUmFUM0U6MTpjaQ",
     clientSecret: "llmmUQaV9Wd9OqOoQOXjazr167r5VS0al30h2m9w6MIr5Xrnxi",
@@ -13,8 +14,10 @@ const twitterClient = new TwitterApi({
 const app = express();
 var codv;
 
-callbackURL = "http://127.0.0.1:3000/callback"
+callbackURL = "http://127.0.0.1:2000/callback"
 app.get('/auth',async(req,res) => {
+
+  console.log(33)
     const { url, codeVerifier, state } = twitterClient.generateOAuth2AuthLink(
         callbackURL,
         { scope: ["tweet.read", "tweet.write", "users.read", "offline.access"] }
@@ -28,7 +31,7 @@ app.get('/auth',async(req,res) => {
 
 app.get('/callback',async (request, response) => {
     const { state, code } = request.query;
-   
+    console.log(1) 
     const verifierTokens = await verifier.find({});
     
     var codeVerifier = verifierTokens[0].code_verifier
@@ -48,9 +51,10 @@ app.get('/callback',async (request, response) => {
       codeVerifier,
       redirectUri: callbackURL,
     });
-  
+    console.log(2)
     // await dbRef.set({ accessToken, refreshToken });
     await verifier.updateMany({}, { $set: { access_token: accessToken, refresh_token:refreshToken } });
+    console.log(accessToken, refreshToken)
     const { data } = await loggedClient.v2.me(); // start using the client if you want
   
     response.send(data);
@@ -66,8 +70,9 @@ app.get('/tweet',async(req, res)=>{
     refreshToken: newRefreshToken,
   } = await twitterClient.refreshOAuth2Token(verifierTokens[0].refresh_token);
 
-  await verifier.updateMany({}, { $set: { access_token: accessToken, refresh_token:newRefreshToken } });
-
+   await verifier.updateMany({}, { $set: { access_token: accessToken, refresh_token:newRefreshToken } });
+  accessToken2 = accessToken
+  refreshToken2 = newRefreshToken
   const { data } = await refreshedClient.v2.tweet(
      "tweeted"
   );
