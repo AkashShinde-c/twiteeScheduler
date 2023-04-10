@@ -9,4 +9,15 @@ const tokenSchema = new mongoose.Schema({
 
   const verifier = mongoose.model('verify', tokenSchema);
 
-  module.exports = verifier
+  const userSchema = new mongoose.Schema({
+    email: { type: String, required: true, unique: true },
+    password: { type: String, required: true },
+    access_token: { type: String },
+    refresh_token: { type: String },
+    code_verifier: { type: String  },
+    state: { type: String },
+  });
+  
+  const User = mongoose.model('User', userSchema);
+
+  module.exports = {verifier, User}
