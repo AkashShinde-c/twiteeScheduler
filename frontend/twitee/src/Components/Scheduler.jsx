@@ -69,10 +69,10 @@ export default function Scheduler() {
 
 
 
-  
+  const storedIsConnected = localStorage.getItem('isConnected');
+  console.log(storedIsConnected)
 
   useEffect(() => {
-    const storedIsConnected = localStorage.getItem('isConnected');
     if (storedIsConnected) {
       setIsConnected(storedIsConnected === 'true');
     }
@@ -115,7 +115,7 @@ export default function Scheduler() {
     <>
       <div >
         
-          {isConnected ? (
+          {setIsConnected? (
             <div className="cardHolder">
             <span>You have sccessfully connected your Account..!</span>
             <div className="card"> 

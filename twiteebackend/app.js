@@ -79,8 +79,8 @@ app.get("/callback", async (request, response) => {
   // console.log(data);
 });
 
-app.get("/tweet", async (req, res) => {
-  const verifierTokens = await User.find({ _id: id });
+app.get("/tweet",authCheck,async (req, res) => {
+  const verifierTokens = await User.find({ _id: req.user });
   const { tweetData } = req.query;
   const {
     client: refreshedClient,
